@@ -7,8 +7,55 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// 会員ユーザー
 model User {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String @unique
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String // ハッシュ化して保存想定
+  name      String?
+  events    Event[]  @relation("EventRegisteredBy")
+  createdAt DateTime @default(now())
+}
+
+// 会場（BAR）
+model Bar {
+  id          Int     @id @default(autoincrement())
+  name        String
+  address     String
+  tel         String
+  description String?
+  events      Event[]
+}
+
+// DJ
+model DJ {
+  id      Int       @id @default(autoincrement())
+  name    String
+  genre   String?
+  profile String?
+  events  EventDJ[]
+}
+
+// イベント
+model Event {
+  id           Int       @id @default(autoincrement())
+  title        String
+  date         DateTime
+  imageUrl     String?
+  detail       String?
+  bar          Bar       @relation(fields: [barId], references: [id])
+  barId        Int
+  djs          EventDJ[]
+  registeredBy User      @relation("EventRegisteredBy", fields: [userId], references: [id])
+  userId       Int
+  createdAt    DateTime  @default(now())
+}
+
+// イベントDJ中間
+model EventDJ {
+  id      Int   @id @default(autoincrement())
+  event   Event @relation(fields: [eventId], references: [id])
+  eventId Int
+  dj      DJ    @relation(fields: [djId], references: [id])
+  djId    Int
 }
