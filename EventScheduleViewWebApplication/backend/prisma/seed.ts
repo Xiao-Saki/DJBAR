@@ -42,8 +42,7 @@ async function main() {
     data: {
       name: 'ÆSir',
       genre: 'House',
-      profile:
-        'Cytus II のストーリーの重要人物となるDJ。ちなみに局はみんな神。',
+      profile: 'Cytus II のストーリーの重要人物となるDJ。ちなみに局はみんな神。',
     },
   });
 
