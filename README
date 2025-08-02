@@ -1,23 +1,97 @@
-React Frontend	http://localhost:5173
-NestJS Backend	http://localhost:3001
-PostgreSQL	DB  http://localhost:5432
-pgAdmin	  Util  http://localhost:8080
+DJ Bar Event Schedule Web Application  
+開発・起動マニュアル
 
+---
 
+サーバー & ツール一覧
 
-🔹 pgAdmin
-Webブラウザから GUIでDB管理できる
+サービス        | URL                     | 備考
+-----------------|-------------------------|------------------------
+Frontend (React) | http://localhost:5173   | フロントエンド
+Backend (NestJS) | http://localhost:3001   | APIサーバー
+PostgreSQL       | (localhost:5432)        | DB
+pgAdmin          | http://localhost:8080   | DBのGUIツール
 
-URL: http://localhost:8080
-初回ログイン：
-メール：admin@example.com
-パスワード：admin
+---
 
-サーバー登録時：
-Host: db
-Port: 5432
-User: postgres
-Pass: postgres
+pgAdmin ログイン情報
 
-##最初にやらないといかんやつ
-- 
+- URL: http://localhost:8080
+- 初回ログイン
+  - メール: admin@example.com
+  - パスワード: admin
+- サーバー追加時
+  - Host: db
+  - Port: 5432
+  - User: postgres
+  - Pass: postgres
+
+---
+
+1. Docker Desktopのインストール
+
+- Windows  
+ 公式サイト(https://www.docker.com/ja-jp/products/docker-desktop/)からDLしてインストール
+- Mac
+  brew update
+  brew install docker --cask
+  open /Applications/Docker.app
+- Windows10のみ  
+  WSLを最新に更新
+  wsl --update
+  ※失敗する場合は管理者権限で実行
+
+---
+
+2. Node.jsのインストール
+
+- Node.js公式(https://nodejs.org/ja/)からv20.11.0推奨
+
+---
+
+3. プロジェクトの配置
+
+git clone <このリポジトリのURL>
+cd EventScheduleViewWebApplication
+
+---
+
+4. Dockerコンテナの起動
+
+docker-compose up --build
+
+- frontend, backend, db, pgadminの4つ全てが起動すればOK
+- dbだけ止まる場合 → dbディレクトリを削除して再作成（OSまたぎでゴミが残ることが原因）
+
+---
+
+5. DBマイグレーション＆ダミーデータ投入
+
+docker-compose exec backend npx prisma migrate dev
+docker-compose exec backend npx prisma generate
+docker-compose exec backend npm run prisma:seed
+
+---
+
+6. Prisma StudioでDB中身を確認・編集
+
+docker-compose exec backend npx prisma studio
+
+- ブラウザで http://localhost:5555 を開く
+
+---
+
+7. コンテナ再起動（トラブル時）
+
+docker-compose down
+docker-compose up --build
+
+---
+
+よくある注意点
+
+- 初回やDB構造を変更した時は、必ずマイグレーション&シードを実行
+- Prisma StudioでデータをGUI編集可能
+- エラー時はdownで一度止めて、up --buildで再構築！
+
+---
