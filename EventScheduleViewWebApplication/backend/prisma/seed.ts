@@ -1,3 +1,7 @@
+// ここを必ず一番上に追加！
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
@@ -17,7 +21,7 @@ async function main() {
         name: '音無いお',
       },
     ],
-    skipDuplicates: true, // すでに同じemailがあればスキップ
+    skipDuplicates: true,
   });
 
   // Bar
@@ -97,4 +101,6 @@ main()
     console.error(e);
     process.exit(1);
   })
-  .finally(() => prisma.$disconnect());
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

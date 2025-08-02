@@ -1,26 +1,20 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateBarDto } from './dto/create-bar.dto';
-import { UpdateBarDto } from './dto/update-bar.dto';
 
 @Injectable()
 export class BarService {
-  create(createBarDto: CreateBarDto) {
-    return 'This action adds a new bar';
-  }
+  constructor(private prisma: PrismaService) {}
 
   findAll() {
-    return `This action returns all bar`;
+    return this.prisma.bar.findMany();
+  }
+
+  create(createBarDto: CreateBarDto) {
+    return this.prisma.bar.create({ data: createBarDto });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} bar`;
-  }
-
-  update(id: number, updateBarDto: UpdateBarDto) {
-    return `This action updates a #${id} bar`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} bar`;
+    return this.prisma.bar.findUnique({ where: { id } });
   }
 }

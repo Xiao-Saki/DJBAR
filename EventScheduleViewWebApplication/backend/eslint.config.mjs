@@ -29,7 +29,7 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
+      '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
       '@typescript-eslint/no-misused-promises': 'off',
@@ -37,7 +37,6 @@ export default tseslint.config(
       'prefer-const': 'warn',
       'no-console': 'off',
       'no-useless-escape': 'off',
-      // 'prettier/prettier': 'off', ← これも不要
     },
   },
 );
