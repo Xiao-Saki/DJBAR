@@ -1,27 +1,23 @@
 React Frontend	http://localhost:5173
 NestJS Backend	http://localhost:3001
-PostgreSQL	localhost:5432
-pgAdmin	http://localhost:8080
+PostgreSQL	DB  http://localhost:5432
+pgAdmin	  Util  http://localhost:8080
 
 
 
 🔹 pgAdmin
-Webブラウザから GUIでDB管理できます
+Webブラウザから GUIでDB管理できる
 
 URL: http://localhost:8080
-
 初回ログイン：
-
 メール：admin@example.com
-
 パスワード：admin
 
 サーバー登録時：
-
 Host: db
-
 Port: 5432
-
 User: postgres
-
 Pass: postgres
+
+##最初にやらないといかんやつ
+- 
