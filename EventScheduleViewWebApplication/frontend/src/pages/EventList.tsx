@@ -44,7 +44,7 @@ const EventList: React.FC = () => {
   }, []);
 
   return (
-    <Box bg="#fff" minH="100vh" py={12}>
+    <Box minH="100vh" py={12}>
       <Heading
         as="h1"
         fontSize={['2xl', '4xl']}
@@ -62,7 +62,6 @@ const EventList: React.FC = () => {
         {events.map((event) => (
           <Box
             key={event.id}
-            bg="#f8f8f8"
             borderRadius="2xl"
             overflow="hidden"
             boxShadow="lg"
