@@ -32,7 +32,8 @@ type Event = {
   djs: EventDJ[];
 };
 
-const API_URL = 'http://localhost:3001/event';
+const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
+const API_URL = `${API_BASE}/event`;
 
 const EventList: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
