@@ -1,123 +1,83 @@
-import { Box, Flex, Heading, Text, Button, SimpleGrid, Image, Container } from '@chakra-ui/react';
-import { Link as RouterLink } from 'react-router-dom';
-import Header from '../components/Header';
 import { useEffect, useState } from 'react';
-import { getJSON } from '../lib/api';
+import { Box, Heading, Text, Image, SimpleGrid } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
+import { fetchJson } from '../lib/api';
 
-type EventItem = { id:number; title:string; date:string; imageUrl?:string; bar:{ id:number; name:string } };
+type Bar = {
+  id: number;
+  name: string;
+};
+
+type Event = {
+  id: number;
+  title: string;
+  date: string; // ISO文字列前提
+  imageUrl?: string | null; // 画像が無いこともあるので任意
+  bar?: Bar; // API によっては undefined のこともある
+};
 
 export default function Home() {
-  const [events, setEvents] = useState<EventItem[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    getJSON<EventItem[]>("/event")
+    fetchJson<Event[]>('/events')
       .then((data) => setEvents(data.slice(0, 6)))
-      .catch(console.error);
+      .catch((e) => setErr(e.message));
   }, []);
 
-export default function Home() {
   return (
-    <Box bg="black" color="white" minH="100vh">
-      <Header />
-
-      {/* ヒーロー */}
-      <Box
-        bgImage="url('/hero_bg.jpg')"
-        bgSize="cover"
-        bgPos="center"
-        bgRepeat="no-repeat"
-        py={{ base: 10, md: 16 }}
-        px={4}
-        borderBottom="1px solid"
-        borderColor="whiteAlpha.200"
-      >
-        <Container maxW="6xl">
-          <Heading fontSize={{ base: '2xl', md: '4xl' }} fontFamily="serif" letterSpacing="wide">
-            DJ BAR EVENT PORTAL
-          </Heading>
-          <Text mt={3} color="whiteAlpha.800">
-            アイフライヤー風のイベント紹介サイト（バー / DJ / イベント）
-          </Text>
-
-          <Flex gap={3} mt={6}>
-            <RouterLink to="/events">
-              <Button colorScheme="teal">イベントを見る</Button>
-            </RouterLink>
-            <RouterLink to="/djs">
-              <Button variant="outline" colorScheme="teal">
-                DJを見る
-              </Button>
-            </RouterLink>
-          </Flex>
-        </Container>
-      </Box>
-
-      {/* 今後の注目イベント */}
-      <Container maxW="6xl" py={10}>
-        <Heading
-          as="h2"
-          size="md"
-          mb={6}
-          borderLeft="4px solid"
-          borderColor="pink.400"
-          pl={3}
-          letterSpacing="tight"
-        >
-          今後の注目イベント
-        </Heading>
-
-        {/* spacing -> gap に変更 */}
-        <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} gap={8}>
-          {events.map((e) => (
-            <RouterLink key={e.id} to={`/events/${e.id}`}>
-              <Box
-                role="group"
-                rounded="2xl"
-                overflow="hidden"
-                bg="whiteAlpha.100"
-                boxShadow="xl"
-                _hover={{ transform: 'translateY(-4px) scale(1.02)', boxShadow: '2xl' }}
-                transition="all 0.25s ease"
-              >
-                <Image
-                  src={e.image}
-                  alt={e.title}
-                  w="100%"
-                  h="220px"
-                  objectFit="cover"
-                  _groupHover={{ filter: 'brightness(1.05)' }}
-                  transition="filter 0.25s"
-                />
-                <Box position="relative" p={4}>
-                  <Text color="pink.300" fontSize="xs" fontWeight="bold">
-                    {e.date}
-                  </Text>
-
-                  {/* Heading に noOfLines は使えないので Text で lineClamp */}
-                  <Text as="h3" fontSize="lg" fontWeight="bold" mt={1} lineClamp={2}>
-                    {e.title}
-                  </Text>
-
-                  <Text color="whiteAlpha.800" fontSize="sm" mt={1}>
-                    {e.bar}
-                  </Text>
-                </Box>
-              </Box>
-            </RouterLink>
-          ))}
-        </SimpleGrid>
-      </Container>
-
-      <Box
-        as="footer"
-        borderTop="1px solid"
-        borderColor="whiteAlpha.200"
-        py={6}
+    <Box minH="100vh" py={12}>
+      <Heading
+        as="h1"
+        fontSize={['2xl', '4xl']}
+        fontWeight="bold"
+        letterSpacing="wide"
+        mb={10}
+        color="black"
         textAlign="center"
-        color="whiteAlpha.700"
+        fontFamily="serif"
       >
-        &copy; 2025 DJ BAR EVENT PORTAL
-      </Box>
+        DJ BAR EVENTS
+      </Heading>
+
+      {err && (
+        <Box color="red.500" textAlign="center" mb={6}>
+          Error: {err}
+        </Box>
+      )}
+
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} lineClamp={8} px={{ base: 2, md: 4, lg: 16 }}>
+        {events.map((event) => (
+          <Box
+            key={event.id}
+            borderRadius="2xl"
+            overflow="hidden"
+            boxShadow="lg"
+            transition="all 0.2s"
+            _hover={{ boxShadow: '2xl', transform: 'translateY(-4px) scale(1.03)' }}
+          >
+            <Image
+              src={event.imageUrl || '/sample_event1.jpg'}
+              alt={event.title}
+              objectFit="cover"
+              w="100%"
+              h="220px"
+            />
+            <Box p={5}>
+              <Heading fontSize="xl" mb={2} fontFamily="serif">
+                <Link to={`/events/${event.id}`}>{event.title}</Link>
+              </Heading>
+              <Text fontSize="sm" color="gray.500">
+                {new Date(event.date).toLocaleString()}
+              </Text>
+              <Text fontWeight="bold" mt={2}>
+                <Link to={`/bars/${event.bar?.id ?? ''}`}>{event.bar?.name ?? '会場未設定'}</Link>
+              </Text>
+            </Box>
+          </Box>
+        ))}
+      </SimpleGrid>
     </Box>
   );
 }

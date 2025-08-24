@@ -7,7 +7,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:5173', // 開発
-      'https://showbiz.e1.valueserver.jp', // 公開
+      'http://ando2event.xsrv.jp', // 公開
     ],
     credentials: true,
   });

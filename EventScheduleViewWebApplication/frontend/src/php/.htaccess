@@ -1,0 +1,13 @@
+# /public_html/api/.htaccess
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /api/
+
+  # 物理ファイル・ディレクトリはそのまま
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # それ以外は index.php へ
+  RewriteRule ^ index.php [L]
+</IfModule>
