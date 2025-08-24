@@ -1,77 +1,83 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
+import { Box, Heading, Text, Image, SimpleGrid } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
+import { fetchJson } from '../lib/api';
 
-const events = [
-  {
-    id: 1,
-    title: "Underground's Parasite Festival",
-    date: '2025-08-10',
-    image: '/sample_event1.jpg',
-    bar: 'Bar Blue',
-  },
-  {
-    id: 2,
-    title: 'SUMMER PARTY',
-    date: '2025-08-20',
-    image: '/sample_event2.jpg',
-    bar: '菜コロ',
-  },
-];
+type Bar = {
+  id: number;
+  name: string;
+};
+
+type Event = {
+  id: number;
+  title: string;
+  date: string; // ISO文字列前提
+  imageUrl?: string | null; // 画像が無いこともあるので任意
+  bar?: Bar; // API によっては undefined のこともある
+};
 
 export default function Home() {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchJson<Event[]>('/events')
+      .then((data) => setEvents(data.slice(0, 6)))
+      .catch((e) => setErr(e.message));
+  }, []);
+
   return (
-    <div className="min-h-screen bg-black text-white font-sans">
-      {/* ヘッダー */}
-      <header className="w-full px-4 py-6 flex items-center justify-between bg-black/80 border-b border-white/10">
-        <h1 className="text-3xl font-black tracking-wide">DJ BAR EVENT PORTAL</h1>
-        <nav className="space-x-8 text-lg font-medium">
-          <a href="#" className="hover:text-pink-500">
-            Home
-          </a>
-          <a href="#" className="hover:text-pink-500">
-            イベント
-          </a>
-          <a href="#" className="hover:text-pink-500">
-            DJ
-          </a>
-          <a href="#" className="hover:text-pink-500">
-            BAR
-          </a>
-          <a href="#" className="hover:text-pink-500">
-            ログイン
-          </a>
-        </nav>
-      </header>
-      {/* メイン */}
-      <main className="container mx-auto px-4 py-12">
-        <section>
-          <h2 className="text-2xl font-bold mb-8 tracking-tight border-l-4 border-pink-500 pl-4">
-            今後の注目イベント
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-            {events.map((event) => (
-              <div
-                key={event.id}
-                className="relative group rounded-2xl overflow-hidden shadow-xl bg-white/10"
-              >
-                <img
-                  src={event.image}
-                  alt={event.title}
-                  className="w-full h-56 object-cover group-hover:scale-105 transition duration-500"
-                />
-                <div className="absolute bottom-0 left-0 w-full bg-black/70 px-6 py-4 flex flex-col gap-1">
-                  <span className="text-pink-400 text-xs font-bold">{event.date}</span>
-                  <span className="text-xl font-bold">{event.title}</span>
-                  <span className="text-gray-200 text-sm">{event.bar}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </main>
-      {/* フッター */}
-      <footer className="bg-black/90 border-t border-white/10 py-6 text-center text-gray-400 mt-20">
-        &copy; 2025 DJ BAR EVENT PORTAL
-      </footer>
-    </div>
+    <Box minH="100vh" py={12}>
+      <Heading
+        as="h1"
+        fontSize={['2xl', '4xl']}
+        fontWeight="bold"
+        letterSpacing="wide"
+        mb={10}
+        color="black"
+        textAlign="center"
+        fontFamily="serif"
+      >
+        DJ BAR EVENTS
+      </Heading>
+
+      {err && (
+        <Box color="red.500" textAlign="center" mb={6}>
+          Error: {err}
+        </Box>
+      )}
+
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} lineClamp={8} px={{ base: 2, md: 4, lg: 16 }}>
+        {events.map((event) => (
+          <Box
+            key={event.id}
+            borderRadius="2xl"
+            overflow="hidden"
+            boxShadow="lg"
+            transition="all 0.2s"
+            _hover={{ boxShadow: '2xl', transform: 'translateY(-4px) scale(1.03)' }}
+          >
+            <Image
+              src={event.imageUrl || '/sample_event1.jpg'}
+              alt={event.title}
+              objectFit="cover"
+              w="100%"
+              h="220px"
+            />
+            <Box p={5}>
+              <Heading fontSize="xl" mb={2} fontFamily="serif">
+                <Link to={`/events/${event.id}`}>{event.title}</Link>
+              </Heading>
+              <Text fontSize="sm" color="gray.500">
+                {new Date(event.date).toLocaleString()}
+              </Text>
+              <Text fontWeight="bold" mt={2}>
+                <Link to={`/bars/${event.bar?.id ?? ''}`}>{event.bar?.name ?? '会場未設定'}</Link>
+              </Text>
+            </Box>
+          </Box>
+        ))}
+      </SimpleGrid>
+    </Box>
   );
 }
